@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">react_capacitor_background_service</string>
+    <string name="title_activity_main">react_capacitor_background_service</string>
+    <string name="package_name">com.react_capacitor_background_service</string>
+    <string name="custom_url_scheme">com.react_capacitor_background_service</string>
+</resources>
