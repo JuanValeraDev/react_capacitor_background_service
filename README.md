@@ -1,70 +1,23 @@
-# Getting Started with Create React App
+Esto es un ejemplo de cómo implementar servicios en android en segundo plano en una aplicación React con Capacitor. No necesitamos encapsular el código nativo en un plugin si no vamos a llamar a los métodos de android directamente desde React. En este proyecto llamaremos a un api de meteorología cada 15 segundos para comprobar si la temperatura en Madrid es superior a 20º y en caso afirmativo mostraremos una notificación al usuario.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+	1. En primer lugar ejecutamos "npx create-react-app react_capacitor_background_service" para crear un proyecto React desde 0.
+	
+	2. Instalamos las dependencias con "npm install @capacitor/core @capacitor/cli @capacitor/android". Inicializamos Capacitor con "npx cap init" y añadimos android con "npx cap add android". Hacemos el build con "npm run build" y sincronizamos con "npx cap sync". Cuando queramos ejecutar el proyecto en android usaremos el comando "npx cap run android".
 
-## Available Scripts
+	3. Para poder hacer llamadas a la api "https://api.open-meteo.com/" necesitamos usar Retrofit. Para ello añadimos las dependencias en el fichero build.gradle del módulo app en nuestra plataforma Android: "implementation 'com.squareup.retrofit2:retrofit:2.9.0' implementation 'com.squareup.retrofit2:converter-gson:2.9.0'".
 
-In the project directory, you can run:
+	4. Después creamos en el directorio donde se encuentra MainActivity.java una nueva clase "WeatherService" que hereda de Service. Aquí creamos un objeto Retrofit con baseUrl a la url de la API. 
 
-### `npm start`
+	5. Creamos una interfaz "WeatherApiService" que utilizará Retrofit para hacer las llamadas a la API. Por cómo está estructurado el JSON que nos devuelve la API vamos a crear dos clases Java, una "WeatherResponse" para encapsular la respuesta y otra "CurrentData" para acceder al valor "temperature_2m". Usamos retrofit para crear un objeto WeatherApiService.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+	6. Después creamos un método que crea el canal de notificaciones con NotificationManager y lo llamamos en el onCreate de WeatherService. También creamos un Handler para manejar el bucle de llamadas a la API a cada intervalo de tiempo. 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+	7. A continuación creamos un método que compruebe los permisos muestre la notificación usando el canal creado previamente. Nos pedirá que añadamos el permiso "POST_NOTIFICATION" al Manifest. 
 
-### `npm test`
+	8. Tras esto creamos un objeto Runnable que será el que ejecute las tareas en segundo plano. Hará la llamada a la API, procesará el resultado y en caso de cumplirse la condición llamará al método que muestra la notificación. Usaremos dentro el objeto handler para indicarle el intervalo de tiempo. También utilizaremos handler en el onStartCommand() de WeatherService para inicializar el runnable.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+	9. Ahora vamos a MainActivity donde crearemos un Intent para arrancar el servicio.
 
-### `npm run build`
+	10. Por último debemos añadir una etiqueta <service> con el nombre de nuestro servicio en el Manifest dentro de <application>.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+	11. Tras esto compilamos, sincronizamos y ya debería funcionar el servicio android en segundo plano.
