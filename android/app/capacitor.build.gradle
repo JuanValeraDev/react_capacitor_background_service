@@ -11,6 +11,8 @@ apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
 
 
+implementation 'androidx.datastore:datastore-core-android:1.1.1'
+    implementation 'androidx.datastore:datastore-preferences-core-jvm:1.1.1'
 }
 
 

@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
 
     <application
         android:allowBackup="true"
@@ -25,6 +28,7 @@
             </intent-filter>
 
         </activity>
+        <activity android:name=".PermissionRequestActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -36,8 +40,13 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
         <service android:name=".WeatherService" />
+        <service
+            android:name=".LocationService"
+            android:foregroundServiceType="location" >
+    </service>
 
     </application>
+
 
     <!-- Permissions -->
 

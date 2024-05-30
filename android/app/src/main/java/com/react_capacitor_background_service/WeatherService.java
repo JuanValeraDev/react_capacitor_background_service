@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +34,7 @@ public class WeatherService extends Service {
             .build();
 
 
-    WeatherApiService weatherService = retrofit.create(WeatherApiService.class);
+    WeatherApiService weatherApiService = retrofit.create(WeatherApiService.class);
 
 
     @Override
@@ -76,7 +77,7 @@ public class WeatherService extends Service {
     private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            Call<WeatherResponse> call = weatherService.getWeather(40.4165, -3.7026, "temperature_2m");
+            Call<WeatherResponse> call = weatherApiService.getWeather(40.4165, -3.7026, "temperature_2m");
             call.enqueue(new Callback<WeatherResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<WeatherResponse> call, @NonNull Response<WeatherResponse> response) {
@@ -84,6 +85,7 @@ public class WeatherService extends Service {
                         WeatherResponse weatherResponse = response.body();
                         assert weatherResponse != null;
                         double temperature = weatherResponse.getCurrent().getTemp();
+                        Log.i("debug", "WatherService, temperature: "+temperature);
                         if (temperature > 20) {
                             showNotification();
                         }
